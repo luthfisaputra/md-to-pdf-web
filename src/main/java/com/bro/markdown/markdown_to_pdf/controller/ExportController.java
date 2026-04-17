@@ -1,21 +1,24 @@
 package com.bro.markdown.markdown_to_pdf.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.bro.markdown.markdown_to_pdf.service.MarkdownService;
+import com.bro.markdown.markdown_to_pdf.service.PdfService;
 
 @RestController
 @RequestMapping("/api")
 public class ExportController {
     
     private final MarkdownService markdownService;
+    private final PdfService pdfService;
 
     // Inject service ke controller
-    public ExportController(MarkdownService markdownService) {
+    public ExportController(MarkdownService markdownService, PdfService pdfService) {
         this.markdownService = markdownService;
+        this.pdfService = pdfService;
     }
 
     // Endpoint untuk tes hasil HTML (sebelum nanti diubah ke PDF)
@@ -23,4 +26,25 @@ public class ExportController {
     public String testMarkdownToHtml(@RequestBody String markdown) {
         return markdownService.renderToHtml(markdown);
     }
+
+    // Endpoint untuk download PDF
+    @PostMapping(value = "/export-pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]>  exportToPdf(@RequestBody String markdown) {
+        // 1. Ubah Markdown ke HTML
+        String html = markdownService.renderToHtml(markdown);
+
+        // 2. Ubah HTML ke PDF (berupa byte array)
+        byte[] pdfBytes = pdfService.generatePdfFromHtml(html);
+
+        // 3. Set header agar browser ngerti ini file PDF yang harus di-download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        // Nama file default nya "markdownto.pdf"
+        headers.setContentDispositionFormData("attachment", "markdownto.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+    
 }
