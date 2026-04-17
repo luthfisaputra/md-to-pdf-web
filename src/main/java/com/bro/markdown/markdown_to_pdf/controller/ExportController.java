@@ -30,11 +30,16 @@ public class ExportController {
     // Endpoint untuk download PDF
     @PostMapping(value = "/export-pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]>  exportToPdf(@RequestBody String markdown) {
+        System.out.println("=== Mulai Proses PDF ===");
+        System.out.println("1. Teks Markdown yang masuk: " + markdown);
+
         // 1. Ubah Markdown ke HTML
         String html = markdownService.renderToHtml(markdown);
+        System.out.println("2. Hasil HTML: " + html);
 
         // 2. Ubah HTML ke PDF (berupa byte array)
         byte[] pdfBytes = pdfService.generatePdfFromHtml(html);
+        System.out.println("3. Ukuran file PDF: " + pdfBytes.length + " bytes");
 
         // 3. Set header agar browser ngerti ini file PDF yang harus di-download
         HttpHeaders headers = new HttpHeaders();
