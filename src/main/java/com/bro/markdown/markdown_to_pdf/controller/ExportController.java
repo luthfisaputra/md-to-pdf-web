@@ -51,5 +51,20 @@ public class ExportController {
                 .headers(headers)
                 .body(pdfBytes);
     }
+
+    @PostMapping(value = "/export-pdf-html", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> exportToPdfFromHtml(@RequestBody String htmlContent) {
+
+        // Langsung cetak HTML-nya jadi PDF
+        byte[] pdfBytes = pdfService.generatePdfFromHtml(htmlContent);
+
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "dokumen-rapi.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
     
 }

@@ -10,6 +10,8 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     // Teks Markdown bisa panjang, gunakan columnDefinition TEXT
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -18,8 +20,9 @@ public class Document {
     public Document() {}
 
     // Constructor Biasa
-    public Document(String content) {
+    public Document(String content, String title) {
         this.content = content;
+        this.title = title;
     }
 
     // Getter & Setter
@@ -37,5 +40,13 @@ public class Document {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
